@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ndm#9dvzhb#@&+$8=osmrdn1_4mmj5hib0@)&rb=^*!d0(0%sz'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ndm#9dvzhb#@&+$8=osmrdn1_4mmj5hib0@)&rb=^*!d0(0%sz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -38,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'bookings',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -117,9 +120,45 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'bookings.exceptions.custom_exception_handler',
 }
+
+# CORS settings
+# For development with ngrok, allow all origins
+# This allows requests from any origin (localhost, ngrok, etc.)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Allow credentials (cookies, authorization headers, etc.)
+# django-cors-headers handles this correctly by setting the origin to the requesting origin
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow all headers
+CORS_ALLOW_ALL_HEADERS = True
+
+# Allow all methods
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Explicitly allow common headers (in addition to CORS_ALLOW_ALL_HEADERS)
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

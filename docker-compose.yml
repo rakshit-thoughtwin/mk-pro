@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: slot_booking_api
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - "SECRET_KEY=django-insecure-ndm#9dvzhb#@&+$$8=osmrdn1_4mmj5hib0@)&rb=^*!d0(0%sz"
+    restart: unless-stopped
+
+volumes:
+  static_volume:
+  media_volume:
+
